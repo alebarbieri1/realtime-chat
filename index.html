@@ -1,0 +1,126 @@
+<DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>Chat</title>
+        <script src="https://cdn.socket.io/socket.io-1.2.0.js"></script>
+        <script src="https://code.jquery.com/jquery-3.1.1.min.js"
+  integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8="
+  crossorigin="anonymous"></script>
+        <script>
+            $(document).ready(function(){
+                var socket = io.connect('http://localhost:8080');
+                var usersActive;
+
+                socket.on('connect', function(data){
+                    $('#status').html("<b>Status:</b> Conectado");
+                    $('button[type="submit"]').removeAttr('disabled');
+                    usersActive = $('#users-active-list li').remove();
+                    var nickname;
+                    while (!nickname){
+                        nickname = prompt("What is your nickname?");
+                    }
+                    socket.emit('join', nickname);
+                });
+
+                socket.on('messages', function(data){
+                    if (data.msg == "Conectado"){
+                        console.log("Conectado...")
+                        return;
+                    }
+                    insertMessage(data);
+                });
+
+                socket.on('users active', function(user){
+                    $('#users-active-list').append('<li>'+user+'</li>');
+                });
+
+                socket.on('user disconnected', function(user){
+                    usersActive = $('#users-active-list li').get();
+                    console.log(usersActive);
+                    for (var i = 0; i < usersActive.length; i++){
+                        if (usersActive[i].textContent == user){
+                            $('#users-active-list li').get(i).remove();
+                            break;
+                        }
+                    }
+                });
+
+                $('#chat_form').submit(function(e){
+                    e.preventDefault();
+                    var message = $('#chat_input').val();
+                    if (!message){
+                        return;
+                    }
+                    $('#chat_input').val('');
+                    // Emit the messages event on the server
+                    socket.emit('messages', message);
+              });
+
+              function insertMessage(data){
+                  $('#message-list').append('<li>'+data+'</li>');
+              }
+            });
+
+        </script>
+        <style type="text/css">
+            div#msg-container ul {
+                margin: 0;
+                padding: 0;
+            }
+            div#msg-container ul li {
+                background-color: #C2D6FF;
+                border-radius: 5px;
+                padding: 10px;
+                padding-left: 5px;
+                margin-left: 2px;
+                overflow-wrap: break-word;
+                margin-top: 5px;
+                list-style: none;
+                display: block;
+                width: 90%;
+            }
+
+            div#msg-container {
+                background-color: #7FCFE8;
+                width: 400px;
+                height: 400px;
+                overflow-y: auto;
+                overflow-x: hidden;
+            }
+
+            input[type="text"] {
+                width: 400px;
+            }
+
+            button[type="submit"]{
+                width: 250px;
+                padding: 10px;
+                background-color: #C9E815;
+                color: black;
+                font-weight: bold;
+                border: white;
+                border-radius: 3px;
+                margin-top: 2px;
+            }
+
+        </style>
+    </head>
+    <body> 
+        <h1>Chat</h1>
+        <div id="msg-container">
+            <ul id="message-list"></ul>
+        </div>
+        <br>
+        <form id="chat_form">
+            <input type="text" id="chat_input">
+            <br>
+            <button type="submit" disabled>Send</button>
+        </form>
+        <span id="status"><b>Status:</b> Desconectado </span>
+        <div id="users-active-container">
+            <h1>Usuários Ativos</h1>
+            <ul id="users-active-list"></ul>
+        </div>
+    </body>
+</html>
