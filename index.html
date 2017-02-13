@@ -7,39 +7,40 @@
         <script src="https://code.jquery.com/jquery-3.1.1.min.js"
   integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8="
   crossorigin="anonymous"></script>
+
         <script>
-            $(document).ready(function(){
+            $(document).ready(function() {
                 var socket = io.connect('http://localhost:8080');
                 var usersActive;
+                var nickname;
 
-                socket.on('connect', function(data){
-                    $('#status').html("<b>Status:</b> Conectado");
+                socket.on('connect', function(data) {
                     $('button[type="submit"]').removeAttr('disabled');
                     usersActive = $('ul#users-active-list li').remove();
-                    var nickname;
-                    while (!nickname){
+                    while (!nickname) {
                         nickname = prompt("What is your nickname?");
                     }
+                    $('#status').html("<b>Status:</b> Conectado como <u>"+nickname+"</u>");
                     socket.emit('join', nickname);
                 });
 
-                socket.on('messages', function(data){
-                    if (data.msg == "Conectado"){
+                socket.on('messages', function(data) {
+                    if (data.msg == "Conectado") {
                         console.log("Conectado...")
                         return;
                     }
                     insertMessage(data);
                 });
 
-                socket.on('users active', function(user){
-                    $('ul#users-active-list').append('<li>'+user+'</li>');
+                socket.on('users active', function(user) {
+                    $('ul#users-active-list').append('<li>' + user + '</li>');
                     $('#users-active-count').text('(' + $('ul#users-active-list li').length + ')');
                 });
 
-                socket.on('user disconnected', function(user){
+                socket.on('user disconnected', function(user) {
                     usersActive = $('ul#users-active-list li').get();
-                    for (var i = 0; i < usersActive.length; i++){
-                        if (usersActive[i].textContent == user){
+                    for (var i = 0; i < usersActive.length; i++) {
+                        if (usersActive[i].textContent == user) {
                             $('ul#users-active-list li').get(i).remove();
                             $('#users-active-count').text('(' + $('ul#users-active-list li').length + ')');
                             break;
@@ -47,23 +48,66 @@
                     }
                 });
 
-                $('#chat_form').submit(function(e){
+                $('#chat_form').submit(function(e) {
                     e.preventDefault();
                     var message = $('#chat_input').val();
-                    if (!message){
+                    if (!message) {
                         return;
                     }
                     $('#chat_input').val('');
                     // Emit the messages event on the server
                     socket.emit('messages', message);
-              });
+                    insertMessage('<b><u>Você</u></b>' + ': ' + message)
+                });
 
-              function insertMessage(data){
-                  $('#message-list').append('<li>'+data+'</li>');
-              }
+                function insertMessage(data) {
+                    $('#message-list').append('<li>' + data + '</li>');
+                }
+
+                var typing = false;
+                var timeoutId;
+
+                function timeOutFunction() {
+                    socket.emit('typing', false);
+                    typing = false;
+                }
+
+                // Quando o usuário pressionar alguma tecla, será executada a função abaixo
+                $('#chat_input').keyup(function() {
+                    // Caso o usuário não esteja digitando, avisa o servidor que o usuário começou/voltou a digitar
+                    if (!typing) {
+                        typing = true;
+                        socket.emit('typing', true);
+                        // Caso fique 3 segundos sem digitar, executa a função timeOutFunction, que avisa o servidor que o usuário parou de digitar
+                        timeoutId = setTimeout(timeOutFunction, 3000);
+                    } else {
+                        // Caso ainda esteja digitando ao pressionar uma tecla, renova o timeout por mais 3 segundos
+                        clearTimeout(timeoutId);
+                        timeoutId = setTimeout(timeOutFunction, 3000);
+                    }
+                });
+
+                var typingMsg = '<b>Usuários digitando: </b>';
+                var usersTyping = [];
+
+                socket.on('typing', function(user) {
+                    usersTyping.push(user);
+                    if ($('#users-typing').css('display') == 'none') {
+                        $('#users-typing').show(500);
+                    }
+                    $('#users-typing').html(typingMsg + usersTyping.toString().replace(',', ', '));
+                });
+
+                socket.on('stop typing', function(user) {
+                    usersTyping.splice(usersTyping.indexOf(user), 1);
+                    $('#users-typing').html(typingMsg + usersTyping);
+                    if (usersTyping.length == 0) {
+                        $('#users-typing').hide(500);
+                    }
+                });
             });
-
         </script>
+
         <style type="text/css">
             div#msg-container ul {
                 margin: 0;
@@ -104,7 +148,6 @@
                 border-radius: 3px;
                 margin-top: 2px;
             }
-
         </style>
     </head>
     <body> 
@@ -118,9 +161,10 @@
             <br>
             <button type="submit" disabled>Send</button>
         </form>
+        <p id="users-typing" style="display: none;"></p>
         <span id="status"><b>Status:</b> Desconectado </span>
         <div id="users-active-container">
-            <h1>Usuários Ativos <span id="users-active-count">(0)</span></h1>
+            <h2>Usuários Ativos <span id="users-active-count">(0)</span></h2>
             <ul id="users-active-list"></ul>
         </div>
     </body>

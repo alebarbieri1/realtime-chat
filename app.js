@@ -37,7 +37,7 @@ io.on('connection', function(client){
         // Broadcast message to all other clientes connected
         client.broadcast.emit("messages", '<b>'+nickname+'</b>' + ': ' + data);
         // Send the same message back to our client
-        client.emit('messages', '<b>'+nickname+'</b>' + ": " + data);
+        // client.emit('messages', '<b>'+nickname+'</b>' + ": " + data);
         storeMessage(nickname, data);
     });
 
@@ -64,6 +64,24 @@ io.on('connection', function(client){
         // All users active receive the name of the user that disconnected from the chat
         client.broadcast.emit("user disconnected", client.nickname);
     });
+
+    client.on('typing', function(isTyping){
+        if (isTyping){
+            client.broadcast.emit('typing', client.nickname);
+            // Remove - debug only
+            /*
+            client.emit('typing', client.nickname);
+            console.log('Typing');
+            */
+        } else {
+            client.broadcast.emit('stop typing', client.nickname);
+            //Remove - debug only
+            /*
+            client.emit('stop typing', client.nickname);
+            console.log('Stop typing');
+            */
+        }
+    })
 });
 
 app.get('/', function(req, res){
