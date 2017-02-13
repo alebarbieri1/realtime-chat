@@ -15,7 +15,7 @@
                 socket.on('connect', function(data){
                     $('#status').html("<b>Status:</b> Conectado");
                     $('button[type="submit"]').removeAttr('disabled');
-                    usersActive = $('#users-active-list li').remove();
+                    usersActive = $('ul#users-active-list li').remove();
                     var nickname;
                     while (!nickname){
                         nickname = prompt("What is your nickname?");
@@ -32,14 +32,16 @@
                 });
 
                 socket.on('users active', function(user){
-                    $('#users-active-list').append('<li>'+user+'</li>');
+                    $('ul#users-active-list').append('<li>'+user+'</li>');
+                    $('#users-active-count').text('(' + $('ul#users-active-list li').length + ')');
                 });
 
                 socket.on('user disconnected', function(user){
-                    usersActive = $('#users-active-list li').get();
+                    usersActive = $('ul#users-active-list li').get();
                     for (var i = 0; i < usersActive.length; i++){
                         if (usersActive[i].textContent == user){
-                            $('#users-active-list li').get(i).remove();
+                            $('ul#users-active-list li').get(i).remove();
+                            $('#users-active-count').text('(' + $('ul#users-active-list li').length + ')');
                             break;
                         }
                     }
@@ -118,7 +120,7 @@
         </form>
         <span id="status"><b>Status:</b> Desconectado </span>
         <div id="users-active-container">
-            <h1>Usuários Ativos</h1>
+            <h1>Usuários Ativos <span id="users-active-count">(0)</span></h1>
             <ul id="users-active-list"></ul>
         </div>
     </body>
