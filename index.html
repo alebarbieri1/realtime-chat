@@ -100,7 +100,7 @@
 
                 socket.on('stop typing', function(user) {
                     usersTyping.splice(usersTyping.indexOf(user), 1);
-                    $('#users-typing').html(typingMsg + usersTyping);
+                    $('#users-typing').html(typingMsg + usersTyping.toString().replace(',', ', '));
                     if (usersTyping.length == 0) {
                         $('#users-typing').hide(500);
                     }
