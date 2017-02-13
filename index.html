@@ -37,7 +37,6 @@
 
                 socket.on('user disconnected', function(user){
                     usersActive = $('#users-active-list li').get();
-                    console.log(usersActive);
                     for (var i = 0; i < usersActive.length; i++){
                         if (usersActive[i].textContent == user){
                             $('#users-active-list li').get(i).remove();
