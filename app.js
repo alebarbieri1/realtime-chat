@@ -84,8 +84,14 @@ io.on('connection', function(client){
     })
 });
 
+/*
 app.get('/', function(req, res){
     res.sendFile(__dirname + '/index.html');
 });
+*/
 
-server.listen(8080);
+app.use(express.static('public'));
+
+server.listen(8080, function(){
+    console.log('Listening on port %d', 8080);
+});

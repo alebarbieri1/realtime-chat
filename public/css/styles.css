@@ -1,0 +1,39 @@
+div#msg-container ul {
+    margin: 0;
+    padding: 0;
+}
+div#msg-container ul li {
+    background-color: #C2D6FF;
+    border-radius: 5px;
+    padding: 10px;
+    padding-left: 5px;
+    margin-left: 2px;
+    overflow-wrap: break-word;
+    margin-top: 5px;
+    list-style: none;
+    display: block;
+    width: 90%;
+}
+
+div#msg-container {
+    background-color: #7FCFE8;
+    width: 400px;
+    height: 400px;
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+
+input[type="text"] {
+    width: 400px;
+}
+
+button[type="submit"]{
+    width: 250px;
+    padding: 10px;
+    background-color: #C9E815;
+    color: black;
+    font-weight: bold;
+    border: white;
+    border-radius: 3px;
+    margin-top: 2px;
+}

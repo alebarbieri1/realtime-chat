@@ -1,0 +1,29 @@
+<DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>Chat</title>
+        <script src="https://cdn.socket.io/socket.io-1.2.0.js"></script>
+        <script src="./js/jquery-3.1.1.min.js"></script>
+        <script type="text/javascript" src="./js/realtime-chat.js"></script>
+        <link rel="stylesheet" href="./css/styles.css">
+    </head>
+    <body> 
+        <h1>Chat</h1>
+        <div id="msg-container">
+            <ul id="message-list"></ul>
+        </div>
+        <br>
+        <form id="chat_form">
+            <input type="text" id="chat_input">
+            <br>
+            <button type="submit" disabled>Send</button>
+        </form>
+        <p id="users-typing" style="display: none;"></p>
+        <span id="status"><b>Status:</b> Desconectado </span>
+        <div id="users-active-container">
+            <h2>Usuários Ativos <span id="users-active-count">(0)</span></h2>
+            <ul id="users-active-list"></ul>
+        </div>
+    </body>
+</html>
