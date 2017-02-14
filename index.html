@@ -57,6 +57,8 @@
                     $('#chat_input').val('');
                     // Emit the messages event on the server
                     socket.emit('messages', message);
+					clearTimeout(timeoutId);
+					timeOutFunction(); // Para de mostrar que o usuário está digitando após enviar a mensagem, mesmo que o tempo de 3 segundos sem digitar não tenha terminado
                     insertMessage('<b><u>Você</u></b>' + ': ' + message)
                 });
 
