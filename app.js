@@ -92,6 +92,6 @@ app.get('/', function(req, res){
 
 app.use(express.static('public'));
 
-server.listen(8080, function(){
-    console.log('Listening on port %d', 8080);
+server.listen(8092, function(){
+    console.log('Listening on port %d', 8092);
 });

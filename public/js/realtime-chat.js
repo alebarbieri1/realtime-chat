@@ -1,5 +1,5 @@
 $(document).ready(function() {
-    var socket = io.connect('http://localhost:8080');
+    var socket = io.connect('http://localhost:8092');
     var usersActive;
     var nickname;
 
